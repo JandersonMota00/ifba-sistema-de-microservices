@@ -40,6 +40,7 @@ Em seguida, deverão refatorar e aplicar padrões:
 - **Linguagem:** Java 21
 
 ## Estrutura do Projeto
+A estrutura será a seguinte, com cada microserviço sendo um módulo Maven independente.
 ```
 ifba-sistema-de-microservices/
 ├── versao_inicial/
@@ -51,8 +52,83 @@ ifba-sistema-de-microservices/
 Estrutura da versão inicial
 ```
 versao_inicial/
-├── ...
-└── ...
+├── usuario-servico/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── com/
+│   │   │   │       └── usuarioservico/
+│   │   │   │           └── usuario/
+│   │   │   │               ├── controller/
+│   │   │   │               │   └── UsuarioController.java
+│   │   │   │               │
+│   │   │   │               ├── model/
+│   │   │   │               │   └── Usuario.java
+│   │   │   │               │
+│   │   │   │               ├── repository/
+│   │   │   │               │   └── UsuarioRepository.java
+│   │   │   │               │
+│   │   │   │               └── UsuarioApplication.java
+│   │   │   │
+│   │   │   └── resources/
+│   │   │       ├── static/
+│   │   │       ├── templates/
+│   │   │       └── application.properties
+│   │   │
+│   │   └── tets/
+│   └── pom.xml
+|
+├── pedido-servico/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── com/
+│   │   │   │       └── pedidoservico/
+│   │   │   │           └── pedido/
+│   │   │   │               ├── controller/
+│   │   │   │               │   └── PedidoController.java
+│   │   │   │               │
+│   │   │   │               ├── model/
+│   │   │   │               │   └── Pedido.java
+│   │   │   │               │
+│   │   │   │               ├── repository/
+│   │   │   │               │   └── PedidoRepository.java
+│   │   │   │               │
+│   │   │   │               └── PedidoApplication.java
+│   │   │   │
+│   │   │   └── resources/
+│   │   │       ├── static/
+│   │   │       ├── templates/
+│   │   │       └── application.properties
+│   │   │
+│   │   └── tets/
+│   └── pom.xml
+|
+└── pagamento-servico/
+    ├── src/
+    │   ├── main/
+    │   │   ├── java/
+    │   │   │   └── com/
+    │   │   │       └── pagamentoservico/
+    │   │   │           └── pagamento/
+    │   │   │               ├── controller/
+    │   │   │               │   └── PagamentoController.java
+    │   │   │               │
+    │   │   │               ├── model/
+    │   │   │               │   └── Pagamento.java
+    │   │   │               │
+    │   │   │               ├── repository/
+    │   │   │               │   └── PagamentoRepository.java
+    │   │   │               │
+    │   │   │               └── PagamentoApplication.java
+    │   │   │
+    │   │   └── resources/
+    │   │       ├── static/
+    │   │       ├── templates/
+    │   │       └── application.properties
+    │   │
+    │   └── tets/
+    └── pom.xml
 ```
 
 Estrutura da versão refatorada
@@ -71,3 +147,5 @@ versao_refatorada/
 ## Instruções de Execução
 
 ## Documentação
+https://docs.google.com/document/d/1nUA8HdSj414nH4rgpXNYhCkczUzeVNjgaVSPjjOYnK8/edit?usp=sharing
+
