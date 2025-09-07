@@ -134,8 +134,79 @@ versao_inicial/
 Estrutura da versão refatorada
 ```
 versao_refatorada/
-├── ...
-└── ...
+├── api-gateway-servico/
+│   ├── src/
+│   │   └── main/
+│   │       ├── java/
+│   │       |   └── com/
+│   │       |       └── apigatewayservico/
+│   │       |           └── apigateway/
+│   │       |               └── ApigatewayApplication.java
+│   |       |
+│   |       └── resources/
+│   |           └── application.properties
+│   └── pom.xml
+│
+├── pagamento-servico/
+│   ├── src/
+│   │   └── main/
+│   │       └── java/
+│   │           └── com/
+│   │               └── pagamentoservico/
+│   │                   └── pagamento/
+|   |                       ├── controller/
+|   |                       │   └── PagamentoController.java
+|   |                       |
+│   |                       ├── model/
+│   |                       │   └── PagamentoRequisicao.java
+|   |                       |
+│   |                       └── PagamentoServicoApplication.java
+│   └── pom.xml
+│
+├── pedido-servico/
+│   ├── src/
+│   │   └── main/
+│   │       └── java/
+│   │           └── com/
+|   |               └── pedidoservico/
+|   |                   └── pedido/
+│   │                       ├── config/
+│   │                       │   └── AppConfig.java
+│   │                       │
+│   │                       ├── controller/
+│   │                       │   └── PedidoController.java
+│   │                       │
+│   │                       ├── model/
+│   │                       │   └── Pedido.java
+│   │                       │
+│   │                       ├── repository/
+│   │                       │   └── PedidoRepository.java
+│   │                       │
+│   │                       ├── service/
+│   │                       │   ├── PagamentoService.java
+│   │                       │   └── UsuarioService.java
+│   │                       │
+│   │                       └── PedidoServicoApplication.java
+│   └── pom.xml
+│
+└── usuario-servico/
+    ├── src/
+    │   └── main/
+    │       └── java/
+    │           └── com/
+    │               └── usuarioservico/
+    │                   └── usuario/
+    │                       ├── controller/
+    │                       │   └── UsuarioController.java
+    │                       |
+    │                       ├── model/
+    │                       │   └── Usuario.java
+    │                       |
+    │                       ├── repository/
+    │                       │   └── UsuarioRepository.java
+    │                       |
+    │                       └── UsuarioApplication.java
+    └── pom.xml
 ```
 
 ## UML
