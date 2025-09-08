@@ -1,7 +1,7 @@
 package com.pedidoservico.pedido.controller;
 
 import com.pedidoservico.pedido.model.Pedido;
-import com.pedidoservico.pedido.repository.PedidoRepository;
+import com.pedidoservico.pedido.repositories.PedidoRepository;
 import com.pedidoservico.pedido.service.PagamentoService;
 import com.pedidoservico.pedido.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
