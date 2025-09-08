@@ -1,4 +1,5 @@
 # Trabalho de Sistema de Pagamentos
+
 - **Instituição:** Instituto Federal da Bahia (IFBA)
 - **Curso:** Análise e Desenvolvimento de Sistemas (ADS)
 - **Disciplina:** Padrões de Projetos
@@ -8,12 +9,15 @@
 - **Ano:** 2025.1
 
 # Descrição do projeto: Sistema de Pagamentos
+
 Deverá modelar um sistema de microservices (tema livre, ex: e-commerce, rede social, sistema de pagamentos, IoT distribuído) que inicialmente apresente falhas arquiteturais comuns:
+
 - Chamadas diretas entre serviços sem controle de falha.
 - Alto acoplamento entre serviços (dependências rígidas).
 - Violações explícitas de princípios SOLID (ex: God Service).
 
 Em seguida, deverão refatorar e aplicar padrões:
+
 1. API Gateway – concentrar acesso externo e controlar o roteamento.
 2. Circuit Breaker – impedir falhas em cascata entre serviços.
 3. Bulkhead – isolar recursos críticos e evitar sobrecarga global.
@@ -37,10 +41,13 @@ Em seguida, deverão refatorar e aplicar padrões:
 </table>
 
 ## Tecnologias
+
 - **Linguagem:** Java 21
 
 ## Estrutura do Projeto
+
 A estrutura será a seguinte, com cada microserviço sendo um módulo Maven independente.
+
 ```
 ifba-sistema-de-microservices/
 ├── versao_inicial/
@@ -50,6 +57,7 @@ ifba-sistema-de-microservices/
 ```
 
 Estrutura da versão inicial
+
 ```
 versao_inicial/
 ├── usuario-servico/
@@ -132,6 +140,7 @@ versao_inicial/
 ```
 
 Estrutura da versão refatorada
+
 ```
 versao_refatorada/
 ├── api-gateway-servico/
@@ -212,12 +221,15 @@ versao_refatorada/
 ## UML
 
 ### Versão Inicial
+
 <img width="3840" height="1712" alt="UML-versao-inicial" src="https://github.com/user-attachments/assets/94c772ca-8bfb-4d30-9787-6fc8ba6fdb88" />
 
 ### Versão Refatorada
+
 <img width="3840" height="1972" alt="UML-versao-refatorada" src="https://github.com/user-attachments/assets/34d70284-c71a-4ec4-b646-c792c4e5e78f" />
 
 ## Instruções de Execução
+
 A refatoração da arquitetura se baseou na implementação de quatro padrões de design essenciais para microsserviços: **API Gateway**, **Circuit Breaker**, **Bulkhead** e **Inversão de Controle (IoC)** com Injeção de Dependência.
 
 **1. API Gateway**
@@ -237,6 +249,7 @@ O padrão Circuit Breaker (Disjuntor) foi implementado no `pedido-servico` para 
 Para resolver isso, usamos a biblioteca **Resilience4j**. A anotação `@CircuitBreaker` foi adicionada aos métodos de comunicação com outros serviços (`processarPagamento` e `validarUsuario` no `PedidoService`).
 
 - **Mecanismo:** O Circuit Breaker monitora o número de falhas consecutivas.
+
   1. **Estado Fechado (Closed):** O fluxo de requisições é normal. Se o número de falhas ultrapassa um limite configurado, o disjuntor abre.
 
   2. **Estado Aberto (Open):** O disjuntor interrompe as requisições para o serviço defeituoso por um tempo pré-determinado. Qualquer nova chamada é imediatamente desviada para um método de `fallback`, que retorna uma resposta de erro rápida, sem tentar acessar o serviço problemático. Isso dá tempo para o serviço se recuperar.
@@ -275,6 +288,20 @@ Essa abordagem trouxe benefícios cruciares:
 
 A combinação desses quatro padrões de arquitetura resultou em um sistema mais **resiliente**, **escalável** e **manutenção**, demonstrando como os princípios de design podem ser aplicados na prática para resolver problemas comuns em arquiteturas distribuídas.
 
-## Documentação
-https://docs.google.com/document/d/1nUA8HdSj414nH4rgpXNYhCkczUzeVNjgaVSPjjOYnK8/edit?usp=sharing
+## Reflexão crítica
 
+**Idempotência:** As operações devem ser idempotentes sempre que possível. Se uma requisição falhar e precisar ser repetida, o sistema deve garantir que o resultado final seja o mesmo, sem efeitos colaterais indesejados. Isso é crucial para sistemas de fila de mensagens e retries.
+
+**Circuit Breaker:** Implemente o padrão Circuit Breaker para evitar que uma falha em um serviço se propague em cascata. Se um serviço chamado estiver falhando repetidamente, o Circuit Breaker o "desconecta" temporariamente, permitindo que o sistema se recupere e parando de sobrecarregar o serviço defeituoso.
+
+**Timeouts e Retries:** Configure timeouts de forma agressiva em todas as chamadas de rede. Um serviço lento pode ser tão ruim quanto um serviço fora do ar. Use retries com um backoff exponencial para evitar sobrecarregar o serviço quando ele voltar.
+
+**Logs Estruturados:** Não use apenas console.log(). Seus logs precisam ser estruturados (JSON, por exemplo) para que possam ser facilmente coletados, centralizados e pesquisados.
+
+**Métricas:** Monitore métricas de performance como latência, taxa de erro e throughput para cada serviço. Use ferramentas como Prometheus ou Grafana para visualizar e configurar alertas.
+
+**Tracing Distribuído:** Quando uma requisição passa por vários serviços, o tracing distribuído (com OpenTelemetry, por exemplo) permite que você siga o fluxo de ponta a ponta. É a única forma de identificar gargalos ou falhas em um fluxo complexo.
+
+**Testes de Resiliência:** Vão além dos testes de unidade e integração. Use Chaos Engineering para injetar falhas propositalmente na sua infraestrutura. Ferramentas como o Chaos Monkey da Netflix são excelentes para isso. Eles desligam instâncias aleatoriamente para garantir que seu sistema consiga se recuperar.
+
+**Deployment Gradual:** Use estratégias como Blue/Green ou Canary Deployments para lançar novas versões. Isso permite que você teste o novo código com uma pequena porcentagem do tráfego antes de lançá-lo para todos, minimizando o impacto de uma falha.
