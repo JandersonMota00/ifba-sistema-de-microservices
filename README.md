@@ -212,8 +212,10 @@ versao_refatorada/
 ## UML
 
 ### Versão Inicial
+<img width="3840" height="1712" alt="UML-versao-inicial" src="https://github.com/user-attachments/assets/94c772ca-8bfb-4d30-9787-6fc8ba6fdb88" />
 
 ### Versão Refatorada
+<img width="3840" height="1972" alt="UML-versao-refatorada" src="https://github.com/user-attachments/assets/34d70284-c71a-4ec4-b646-c792c4e5e78f" />
 
 ## Instruções de Execução
 A refatoração da arquitetura se baseou na implementação de quatro padrões de design essenciais para microsserviços: **API Gateway**, **Circuit Breaker**, **Bulkhead** e **Inversão de Controle (IoC)** com Injeção de Dependência.
