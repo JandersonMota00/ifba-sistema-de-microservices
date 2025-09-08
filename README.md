@@ -218,7 +218,7 @@ versao_refatorada/
 ## Instruções de Execução
 A refatoração da arquitetura se baseou na implementação de quatro padrões de design essenciais para microsserviços: **API Gateway**, **Circuit Breaker**, **Bulkhead** e **Inversão de Controle (IoC)** com Injeção de Dependência.
 
-1. **API Gateway**
+**1. API Gateway**
 O padrão API Gateway foi aplicado com a criação de um novo serviço, o api-gateway-servico, que atua como o único ponto de entrada para todas as requisições externas ao sistema. Na versão inicial, os clientes acessavam cada serviço (usuário, pedido, pagamento) diretamente, o que aumentava o acoplamento e a complexidade do cliente.
 
 Com o API Gateway, o cliente agora se comunica apenas com o localhost:8080. O Gateway é responsável por:
@@ -228,7 +228,7 @@ Com o API Gateway, o cliente agora se comunica apenas com o localhost:8080. O Ga
 
 A implementação utilizou o **Spring Cloud Gateway**, que oferece uma solução de alto desempenho e facilmente configurável para este padrão, tanto de forma declarativa (via `application.properties`) quanto programática (via `RouteLocatorBuilder`), como demonstrado no código.
 
-2. **Circuit Breaker**
+**2. Circuit Breaker**
 
 O padrão Circuit Breaker (Disjuntor) foi implementado no `pedido-servico` para prevenir falhas em cascata. Na arquitetura inicial, uma falha no `pagamento-servico` (por exemplo, por sobrecarga ou indisponibilidade) causaria um `timeout` ou erro, que se propagaria de forma síncrona para o `pedido-servico`, e por fim para o cliente, degradando a experiência do usuário e podendo até derrubar todo o sistema.
 
@@ -243,71 +243,8 @@ Para resolver isso, usamos a biblioteca **Resilience4j**. A anotação `@Circuit
 
 O `fallbackMethod` associado ao `@CircuitBreaker` garante que a aplicação continue funcionando mesmo que um serviço dependente esteja com problemas, melhorando significativamente a resiliência do sistema.
 
-Com certeza. A seguir, está a explicação técnica detalhada sobre a aplicação dos padrões de arquitetura na sua refatoração, conforme solicitado na Etapa 4 do seu projeto.
+**3. Bulkhead**
 
-Explicação Técnica da Aplicação dos Padrões
-A refatoração da arquitetura inicial para um sistema mais robusto e resiliente se baseou na implementação de quatro padrões de design essenciais para microsserviços: API Gateway, Circuit Breaker, Bulkhead e Inversão de Controle (IoC) com Injeção de Dependência.
-
-1. API Gateway
-O padrão API Gateway foi aplicado com a criação de um novo serviço, o api-gateway-servico, que atua como o único ponto de entrada para todas as requisições externas ao sistema. Na versão inicial, os clientes acessavam cada serviço (usuário, pedido, pagamento) diretamente, o que aumentava o acoplamento e a complexidade do cliente.
-
-Com o API Gateway, o cliente agora se comunica apenas com o localhost:8080. O Gateway é responsável por:
-
-Roteamento Dinâmico: Ele inspeciona o caminho da requisição (/usuarios, /pedidos, /pagamentos) e a roteia para o microsserviço interno correspondente (localhost:8081, localhost:8082, localhost:8083). Isso elimina a necessidade de o cliente conhecer a topologia interna do sistema.
-
-Centralização de Lógica: O Gateway pode ser expandido para lidar com autenticação, segurança (como validação de tokens JWT) e limitação de taxa de requisições (Rate Limiting), centralizando essa lógica e evitando a duplicação em cada microsserviço.
-
-A implementação utilizou o Spring Cloud Gateway, que oferece uma solução de alto desempenho e facilmente configurável para este padrão, tanto de forma declarativa (via application.properties) quanto programática (via RouteLocatorBuilder), como demonstrado no código.
-
-2. Circuit Breaker
-O padrão Circuit Breaker (Disjuntor) foi implementado no pedido-servico para prevenir falhas em cascata. Na arquitetura inicial, uma falha no pagamento-servico (por exemplo, por sobrecarga ou indisponibilidade) causaria um timeout ou erro, que se propagaria de forma síncrona para o pedido-servico, e por fim para o cliente, degradando a experiência do usuário e podendo até derrubar todo o sistema.
-
-Para resolver isso, usamos a biblioteca Resilience4j. A anotação @CircuitBreaker foi adicionada aos métodos de comunicação com outros serviços (processarPagamento e validarUsuario no PedidoService).
-
-Mecanismo: O Circuit Breaker monitora o número de falhas consecutivas.
-
-Estado Fechado (Closed): O fluxo de requisições é normal. Se o número de falhas ultrapassa um limite configurado, o disjuntor abre.
-
-Estado Aberto (Open): O disjuntor interrompe as requisições para o serviço defeituoso por um tempo pré-determinado. Qualquer nova chamada é imediatamente desviada para um método de fallback, que retorna uma resposta de erro rápida, sem tentar acessar o serviço problemático. Isso dá tempo para o serviço se recuperar.
-
-Estado Meio Aberto (Half-Open): Após o tempo de espera, o disjuntor permite que um pequeno número de requisições de teste passe. Se elas forem bem-sucedidas, ele fecha novamente, restaurando o fluxo normal. Se falharem, ele volta para o estado aberto.
-
-O fallbackMethod associado ao @CircuitBreaker garante que a aplicação continue funcionando mesmo que um serviço dependente esteja com problemas, melhorando significativamente a resiliência do sistema.
-
-3. **Bulkhead**
-
-Com certeza. A seguir, está a explicação técnica detalhada sobre a aplicação dos padrões de arquitetura na sua refatoração, conforme solicitado na Etapa 4 do seu projeto.
-
-Explicação Técnica da Aplicação dos Padrões
-A refatoração da arquitetura inicial para um sistema mais robusto e resiliente se baseou na implementação de quatro padrões de design essenciais para microsserviços: API Gateway, Circuit Breaker, Bulkhead e Inversão de Controle (IoC) com Injeção de Dependência.
-
-1. API Gateway
-O padrão API Gateway foi aplicado com a criação de um novo serviço, o api-gateway-servico, que atua como o único ponto de entrada para todas as requisições externas ao sistema. Na versão inicial, os clientes acessavam cada serviço (usuário, pedido, pagamento) diretamente, o que aumentava o acoplamento e a complexidade do cliente.
-
-Com o API Gateway, o cliente agora se comunica apenas com o localhost:8080. O Gateway é responsável por:
-
-Roteamento Dinâmico: Ele inspeciona o caminho da requisição (/usuarios, /pedidos, /pagamentos) e a roteia para o microsserviço interno correspondente (localhost:8081, localhost:8082, localhost:8083). Isso elimina a necessidade de o cliente conhecer a topologia interna do sistema.
-
-Centralização de Lógica: O Gateway pode ser expandido para lidar com autenticação, segurança (como validação de tokens JWT) e limitação de taxa de requisições (Rate Limiting), centralizando essa lógica e evitando a duplicação em cada microsserviço.
-
-A implementação utilizou o Spring Cloud Gateway, que oferece uma solução de alto desempenho e facilmente configurável para este padrão, tanto de forma declarativa (via application.properties) quanto programática (via RouteLocatorBuilder), como demonstrado no código.
-
-2. Circuit Breaker
-O padrão Circuit Breaker (Disjuntor) foi implementado no pedido-servico para prevenir falhas em cascata. Na arquitetura inicial, uma falha no pagamento-servico (por exemplo, por sobrecarga ou indisponibilidade) causaria um timeout ou erro, que se propagaria de forma síncrona para o pedido-servico, e por fim para o cliente, degradando a experiência do usuário e podendo até derrubar todo o sistema.
-
-Para resolver isso, usamos a biblioteca Resilience4j. A anotação @CircuitBreaker foi adicionada aos métodos de comunicação com outros serviços (processarPagamento e validarUsuario no PedidoService).
-
-Mecanismo: O Circuit Breaker monitora o número de falhas consecutivas.
-
-Estado Fechado (Closed): O fluxo de requisições é normal. Se o número de falhas ultrapassa um limite configurado, o disjuntor abre.
-
-Estado Aberto (Open): O disjuntor interrompe as requisições para o serviço defeituoso por um tempo pré-determinado. Qualquer nova chamada é imediatamente desviada para um método de fallback, que retorna uma resposta de erro rápida, sem tentar acessar o serviço problemático. Isso dá tempo para o serviço se recuperar.
-
-Estado Meio Aberto (Half-Open): Após o tempo de espera, o disjuntor permite que um pequeno número de requisições de teste passe. Se elas forem bem-sucedidas, ele fecha novamente, restaurando o fluxo normal. Se falharem, ele volta para o estado aberto.
-
-O fallbackMethod associado ao @CircuitBreaker garante que a aplicação continue funcionando mesmo que um serviço dependente esteja com problemas, melhorando significativamente a resiliência do sistema.
-
-3. Bulkhead
 O padrão **Bulkhead** (Anteparo) foi implementado em conjunto com o **Circuit Breaker** para isolar recursos críticos e evitar que um serviço lento ou sobrecarregado consuma todos os recursos da aplicação, causando uma falha global. Na arquitetura inicial, uma sobrecarga de threads no `pagamento-servico` poderia esgotar o pool de threads do `pedido-servico`, paralisando-o completamente.
 
 Com a anotação `@Bulkhead` do **Resilience4j**, criamos pools de threads separados para cada tipo de chamada.
@@ -318,9 +255,9 @@ Com a anotação `@Bulkhead` do **Resilience4j**, criamos pools de threads separ
 
 O `Bulkhead` e o `Circuit Breaker` trabalham juntos para criar uma defesa em profundidade, onde o `Bulkhead` previne a sobrecarga e o `Circuit Breaker` reage a falhas para evitar a propagação.
 
-4. **Injeção de Dependência (IoC)**
+**4. Injeção de Dependência (IoC)**
 
-A Inversão de Controle (IoC), concretizada pela Injeção de Dependência, foi aplicada para desacoplar a comunicação entre os serviços. Na versão inicial, o `PedidoController` criava instâncias de `RestTemplate` diretamente (`new RestTemplate()`), gerando um acoplamento rígido com a implementação do cliente HTTP e dificultando testes unitários e a substituição por outras bibliotecas.
+**A Inversão de Controle (IoC)**, concretizada pela Injeção de Dependência, foi aplicada para desacoplar a comunicação entre os serviços. Na versão inicial, o `PedidoController` criava instâncias de `RestTemplate` diretamente (`new RestTemplate()`), gerando um acoplamento rígido com a implementação do cliente HTTP e dificultando testes unitários e a substituição por outras bibliotecas.
 
 Na refatoração, fizemos as seguintes mudanças:
 
